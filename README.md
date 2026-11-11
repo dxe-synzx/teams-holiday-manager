@@ -1,27 +1,14 @@
-# Teams Universal & International Holiday Manager (GUI)
+# Teams Universal & International Holiday Manager (Pro GUI)
 
-A powerful, lightweight PowerShell graphical user interface (GUI) tool designed for Microsoft Teams Administrators to automatically provision regional and international holiday schedules (for Auto Attendants) without manual repetition.
+A modern, polished PowerShell GUI tool for Microsoft Teams Administrators to automatically provision regional and international holiday schedules for Auto Attendants.
 
 ## Features
-- **Graphical User Interface (GUI):** Choose your region/state via a clean dropdown menu.
-- **Global & Regional Support:** Supports all 16 German federal states (with exact religious/regional holiday laws like Fronleichnam, Buß- und Bettag, Reformationstag), Austria, Switzerland, USA, and the UK.
-- **Grouped Holiday Blocks:** Automatically combines multi-day holidays (such as Easter or Christmas) into single calendar blocks to keep the Teams Admin Center organized.
-- **Smart Duplicate Detection:** Scans your tenant beforehand to avoid creating duplicate schedules.
-- **Multi-Year Coverage:** Pre-configured for a 5-year span (2026–2030).
-
-## Prerequisites
-- Windows PowerShell 5.1 or PowerShell 7+
-- Microsoft Teams PowerShell Module (automatically installed if missing)
-- Global Administrator or Teams Administrator permissions in your Microsoft 365 Tenant.
+- **Dual Dropdown System:** Select any country (Germany, Austria, Switzerland, USA, UK) and instantly get matching sub-regions (like all 16 German federal states).
+- **Flexible Date Range:** Freely configure your start and end years (e.g., 2026 to 2030).
+- **Modern UI Design:** Clean, distraction-free graphical user interface built with native Windows Forms styling.
+- **Smart Grouping & Duplicate Check:** Groups multi-day holidays into clean blocks and prevents duplicate entries.
 
 ## Usage
-1. Clone or download this repository.
-2. Run `Teams-HolidayGUI.ps1` via PowerShell.
-3. Authenticate with your administrator credentials.
-4. Select your target region/state, check optional settings (like Christmas Eve inclusion), and click **Feiertage in Teams anlegen**.
-
-## Contributing
-Contributions, bug reports, and feature requests for additional countries/regions are welcome! Feel free to open an issue or pull request.
-
-## License
-Distributed under the MIT License. See `LICENSE` for more information.
+1. Download `Teams-HolidayGUI.ps1`.
+2. Run it with PowerShell.
+3. Select your country, region, set your custom date range, and click **Feiertage in Teams anlegen**.

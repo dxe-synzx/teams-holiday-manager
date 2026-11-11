@@ -1,276 +1,376 @@
 Add-Type -AssemblyName System.Windows.Forms
 Add-Type -AssemblyName System.Drawing
 
-# Formular erstellen
+# --- HAUPTFENSTER (Windows 11 Fluent Style) ---
 $form = New-Object System.Windows.Forms.Form
-$form.Text = "Teams Universal & International Holiday Manager"
-$form.Size = New-Object System.Drawing.Size(480, 520)
+$form.Text = "Teams Global Holiday Manager - Win11 Edition"
+$form.Size = New-Object System.Drawing.Size(540, 680)
 $form.StartPosition = "CenterScreen"
 $form.FormBorderStyle = "FixedDialog"
 $form.MaximizeBox = $false
+$form.BackColor = [System.Drawing.Color]::FromArgb(243, 243, 243)
 
-# Label: Region / Land
-$lblRegion = New-Object System.Windows.Forms.Label
-$lblRegion.Location = New-Object System.Drawing.Point(20, 20)
-$lblRegion.Size = New-Object System.Drawing.Size(420, 20)
-$lblRegion.Text = "Region / Land & Bundesland waehlen:"
-$form.Controls.Add($lblRegion)
+# --- HEADER ---
+$lblHeader = New-Object System.Windows.Forms.Label
+$lblHeader.Location = New-Object System.Drawing.Point(25, 20)
+$lblHeader.Size = New-Object System.Drawing.Size(480, 35)
+$lblHeader.Text = "Teams Global Holiday Manager"
+$lblHeader.Font = New-Object System.Drawing.Font("Segoe UI", 16, [System.Drawing.FontStyle]::Bold)
+$lblHeader.ForeColor = [System.Drawing.Color]::FromArgb(0, 95, 184)
+$form.Controls.Add($lblHeader)
 
-# Dropdown: Universelle Auswahl (Deutschland, AT, CH, International)
-$cmbRegion = New-Object System.Windows.Forms.ComboBox
-$cmbRegion.Location = New-Object System.Drawing.Point(20, 45)
-$cmbRegion.Size = New-Object System.Drawing.Size(420, 25)
-$cmbRegion.DropDownStyle = "DropDownList"
+# --- LAND WAEHLEN (ALLE LAENDER DER WELT) ---
+$lblCountry = New-Object System.Windows.Forms.Label
+$lblCountry.Location = New-Object System.Drawing.Point(25, 70)
+$lblCountry.Size = New-Object System.Drawing.Size(480, 20)
+$lblCountry.Text = "Land waehlen (Alle Laender weltweit):"
+$lblCountry.Font = New-Object System.Drawing.Font("Segoe UI", 9, [System.Drawing.FontStyle]::Bold)
+$form.Controls.Add($lblCountry)
 
-$regions = @(
-    # --- DEUTSCHLAND ---
-    "Deutschland - Sachsen (DE-SN)",
-    "Deutschland - Bayern (DE-BY)",
-    "Deutschland - Baden-Württemberg (DE-BW)",
-    "Deutschland - Berlin (DE-BE)",
-    "Deutschland - Brandenburg (DE-BB)",
-    "Deutschland - Bremen (DE-HB)",
-    "Deutschland - Hamburg (DE-HH)",
-    "Deutschland - Hessen (DE-HE)",
-    "Deutschland - Mecklenburg-Vorpommern (DE-MV)",
-    "Deutschland - Niedersachsen (DE-NI)",
-    "Deutschland - Nordrhein-Westfalen (DE-NW)",
-    "Deutschland - Rheinland-Pfalz (DE-RP)",
-    "Deutschland - Saarland (DE-SL)",
-    "Deutschland - Sachsen-Anhalt (DE-ST)",
-    "Deutschland - Schleswig-Holstein (DE-SH)",
-    "Deutschland - Thüringen (DE-TH)",
-    "Deutschland - Alle Bundesländer (Bundeseinheitlich + Mix)",
-    # --- ÖSTERREICH ---
-    "Österreich - Gesamt (AT)",
-    # --- SCHWEIZ ---
-    "Schweiz - Zürich / Standard (CH)",
-    # --- INTERNATIONAL ---
-    "International - USA (Standard Federal)",
-    "International - UK (United Kingdom)"
-)
-foreach ($r in $regions) { $cmbRegion.Items.Add($r) | Out-Null }
-$cmbRegion.SelectedIndex = 0 # Standard: Sachsen
-$form.Controls.Add($cmbRegion)
+$cmbCountry = New-Object System.Windows.Forms.ComboBox
+$cmbCountry.Location = New-Object System.Drawing.Point(25, 95)
+$cmbCountry.Size = New-Object System.Drawing.Size(480, 30)
+$cmbCountry.DropDownStyle = "DropDownList"
+$cmbCountry.Font = New-Object System.Drawing.Font("Segoe UI", 10)
 
-# Checkbox: Weihnachten inkl. Heiligabend
+# Vollstaendige Liste aller Laender der Welt (Alphabetisch nach ISO)
+$globalCountries = [ordered]@{
+    "Afghanistan (AF)" = "AF"
+    "Aegypten (EG)" = "EG"
+    "Albanien (AL)" = "AL"
+    "Algerien (DZ)" = "DZ"
+    "Andorra (AD)" = "AD"
+    "Angola (AO)" = "AO"
+    "Antigua und Barbuda (AG)" = "AG"
+    "Argentinien (AR)" = "AR"
+    "Armenien (AM)" = "AM"
+    "Aserbaidschan (AZ)" = "AZ"
+    "Aethiopien (ET)" = "ET"
+    "Australien (AU)" = "AU"
+    "Bahamas (BS)" = "BS"
+    "Bahrain (BH)" = "BH"
+    "Bangladesch (BD)" = "BD"
+    "Barbados (BB)" = "BB"
+    "Belarus (BY)" = "BY"
+    "Belgien (BE)" = "BE"
+    "Belize (BZ)" = "BZ"
+    "Benin (BJ)" = "BJ"
+    "Bhutan (BT)" = "BT"
+    "Bolivien (BO)" = "BO"
+    "Bosnien und Herzegowina (BA)" = "BA"
+    "Botsuana (BW)" = "BW"
+    "Brasilien (BR)" = "BR"
+    "Brunei (BN)" = "BN"
+    "Bulgarien (BG)" = "BG"
+    "Burkina Faso (BF)" = "BF"
+    "Burundi (BI)" = "BI"
+    "Chile (CL)" = "CL"
+    "China (CN)" = "CN"
+    "Costa Rica (CR)" = "CR"
+    "Daenemark (DK)" = "DK"
+    "Deutschland (DE)" = "DE"
+    "Dominica (DM)" = "DM"
+    "Dominikanische Republik (DO)" = "DO"
+    "Dschibuti (DJ)" = "DJ"
+    "Ecuador (EC)" = "EC"
+    "El Salvador (SV)" = "SV"
+    "Elfenbeinkueste (CI)" = "CI"
+    "Eritrea (ER)" = "ER"
+    "Estland (EE)" = "EE"
+    "Eswatini (SZ)" = "SZ"
+    "Fidschi (FJ)" = "FJ"
+    "Finnland (FI)" = "FI"
+    "Frankreich (FR)" = "FR"
+    "Gabun (GA)" = "GA"
+    "Gambia (GM)" = "GM"
+    "Georgien (GE)" = "GE"
+    "Ghana (GH)" = "GH"
+    "Grenada (GD)" = "GD"
+    "Griechenland (GR)" = "GR"
+    "Großbritannien / UK (GB)" = "GB"
+    "Guatemala (GT)" = "GT"
+    "Guinea (GN)" = "GN"
+    "Guinea-Bissau (GW)" = "GW"
+    "Guyana (GY)" = "GY"
+    "Haiti (HT)" = "HT"
+    "Honduras (HN)" = "HN"
+    "Indien (IN)" = "IN"
+    "Indonesien (ID)" = "ID"
+    "Irak (IQ)" = "IQ"
+    "Iran (IR)" = "IR"
+    "Irland (IE)" = "IE"
+    "Island (IS)" = "IS"
+    "Israel (IL)" = "IL"
+    "Italien (IT)" = "IT"
+    "Jamaika (JM)" = "JM"
+    "Japan (JP)" = "JP"
+    "Jemen (YE)" = "YE"
+    "Jordanien (JO)" = "JO"
+    "Kambodscha (KH)" = "KH"
+    "Kamerun (CM)" = "CM"
+    "Kanada (CA)" = "CA"
+    "Kap Verde (CV)" = "CV"
+    "Kasachstan (KZ)" = "KZ"
+    "Katar (QA)" = "QA"
+    "Kenia (KE)" = "KE"
+    "Kirgisistan (KG)" = "KG"
+    "Kiribati (KI)" = "KI"
+    "Kolumbien (CO)" = "CO"
+    "Komoren (KM)" = "KM"
+    "Kongo, Demokratische Republik (CD)" = "CD"
+    "Kongo, Republik (CG)" = "CG"
+    "Kroatien (HR)" = "HR"
+    "Kuba (CU)" = "CU"
+    "Kuwait (KW)" = "KW"
+    "Laos (LA)" = "LA"
+    "Lesotho (LS)" = "LS"
+    "Lettland (LV)" = "LV"
+    "Libanon (LB)" = "LB"
+    "Liberia (LR)" = "LR"
+    "Libyen (LY)" = "LY"
+    "Liechtenstein (LI)" = "LI"
+    "Litauen (LT)" = "LT"
+    "Luxemburg (LU)" = "LU"
+    "Madagaskar (MG)" = "MG"
+    "Malawi (MW)" = "MW"
+    "Malaysia (MY)" = "MY"
+    "Malediven (MV)" = "MV"
+    "Mali (ML)" = "ML"
+    "Malta (MT)" = "MT"
+    "Marokko (MA)" = "MA"
+    "Marshallinseln (MH)" = "MH"
+    "Mauretanien (MR)" = "MR"
+    "Mauritius (MU)" = "MU"
+    "Mexiko (MX)" = "MX"
+    "Mikronesien (FM)" = "FM"
+    "Moldau (MD)" = "MD"
+    "Monaco (MC)" = "MC"
+    "Mongolei (MN)" = "MN"
+    "Montenegro (ME)" = "ME"
+    "Mosambik (MZ)" = "MZ"
+    "Myanmar (MM)" = "MM"
+    "Namibia (NA)" = "NA"
+    "Nauru (NR)" = "NR"
+    "Nepal (NP)" = "NP"
+    "Neuseeland (NZ)" = "NZ"
+    "Nicaragua (NI)" = "NI"
+    "Niederlande (NL)" = "NL"
+    "Niger (NE)" = "NE"
+    "Nigeria (NG)" = "NG"
+    "Nordkorea (KP)" = "KP"
+    "Nordmazedonien (MK)" = "MK"
+    "Norwegen (NO)" = "NO"
+    "Oman (OM)" = "OM"
+    "Oesterreich (AT)" = "AT"
+    "Pakistan (PK)" = "PK"
+    "Palau (PW)" = "PW"
+    "Panama (PA)" = "PA"
+    "Papua-Neuguinea (PG)" = "PG"
+    "Paraguay (PY)" = "PY"
+    "Peru (PE)" = "PE"
+    "Philippinen (PH)" = "PH"
+    "Polen (PL)" = "PL"
+    "Portugal (PT)" = "PT"
+    "Ruanda (RW)" = "RW"
+    "Rumaenien (RO)" = "RO"
+    "Russische Foederation (RU)" = "RU"
+    "Salomonen (SB)" = "SB"
+    "Sambia (ZM)" = "ZM"
+    "Samoa (WS)" = "WS"
+    "San Marino (SM)" = "SM"
+    "Sao Tome und Principe (ST)" = "ST"
+    "Saudi-Arabien (SA)" = "SA"
+    "Schweden (SE)" = "SE"
+    "Schweiz (CH)" = "CH"
+    "Senegal (SN)" = "SN"
+    "Serbien (RS)" = "RS"
+    "Seychellen (SC)" = "SC"
+    "Sierra Leone (SL)" = "SL"
+    "Simbabwe (ZW)" = "ZW"
+    "Singapur (SG)" = "SG"
+    "Slowakei (SK)" = "SK"
+    "Slowenien (SI)" = "SI"
+    "Somalia (SO)" = "SO"
+    "Spanien (ES)" = "ES"
+    "Sri Lanka (LK)" = "LK"
+    "St. Kitts und Nevis (KN)" = "KN"
+    "St. Lucia (LC)" = "LC"
+    "St. Vincent und die Grenadinen (VC)" = "VC"
+    "Suedafrika (ZA)" = "ZA"
+    "Sudan (SD)" = "SD"
+    "Suedkorea (KR)" = "KR"
+    "Suedsudan (SS)" = "SS"
+    "Suriname (SR)" = "SR"
+    "Syrien (SY)" = "SY"
+    "Tadschikistan (TJ)" = "TJ"
+    "Tansania (TZ)" = "TZ"
+    "Thailand (TH)" = "TH"
+    "Timor-Leste (TL)" = "TL"
+    "Togo (TG)" = "TG"
+    "Tonga (TO)" = "TO"
+    "Trinidad und Tobago (TT)" = "TT"
+    "Tschad (TD)" = "TD"
+    "Tschechien (CZ)" = "CZ"
+    "Tunesien (TN)" = "TN"
+    "Tuerkei (TR)" = "TR"
+    "Turkmenistan (TM)" = "TM"
+    "Tuvalu (TV)" = "TV"
+    "Uganda (UG)" = "UG"
+    "Ukraine (UA)" = "UA"
+    "Ungarn (HU)" = "HU"
+    "Uruguay (UY)" = "UY"
+    "Usbekistan (UZ)" = "UZ"
+    "Vanuatu (VU)" = "VU"
+    "Vatikanstadt (VA)" = "VA"
+    "Venezuela (VE)" = "VE"
+    "Vereinigte Arabische Emirate (AE)" = "AE"
+    "USA (Vereinigte Staaten) (US)" = "US"
+    "Vietnam (VN)" = "VN"
+    "Zentralafrikanische Republik (CF)" = "CF"
+    "Zypern (CY)" = "CY"
+}
+
+foreach ($key in $globalCountries.Keys) {
+    $cmbCountry.Items.Add($key) | Out-Null
+}
+$cmbCountry.SelectedIndex = 33 # Standard auf Deutschland
+$form.Controls.Add($cmbCountry)
+
+# --- OPTIONEN ---
 $chkXmas = New-Object System.Windows.Forms.CheckBox
-$chkXmas.Location = New-Object System.Drawing.Point(20, 90)
-$chkXmas.Size = New-Object System.Drawing.Size(420, 25)
-$chkXmas.Text = "Weihnachten inklusive Heiligabend (24.12. - 27.12.)"
+$chkXmas.Location = New-Object System.Drawing.Point(25, 145)
+$chkXmas.Size = New-Object System.Drawing.Size(480, 25)
+$chkXmas.Text = "Feiertage als optimierte Kalender-Bloecke anlegen"
+$chkXmas.Font = New-Object System.Drawing.Font("Segoe UI", 9)
 $form.Controls.Add($chkXmas)
 
-# GroupBox: Zeitraum
+# --- ZEITRAUM ---
 $grpYears = New-Object System.Windows.Forms.GroupBox
-$grpYears.Location = New-Object System.Drawing.Point(20, 130)
-$grpYears.Size = New-Object System.Drawing.Size(420, 80)
-$grpYears.Text = " Zeitraum (Jahre) "
+$grpYears.Location = New-Object System.Drawing.Point(25, 185)
+$grpYears.Size = New-Object System.Drawing.Size(480, 75)
+$grpYears.Text = " Planungszeitraum "
+$grpYears.Font = New-Object System.Drawing.Font("Segoe UI", 9, [System.Drawing.FontStyle]::Bold)
 $form.Controls.Add($grpYears)
 
-$lblYearsInfo = New-Object System.Windows.Forms.Label
-$lblYearsInfo.Location = New-Object System.Drawing.Point(15, 30)
-$lblYearsInfo.Size = New-Object System.Drawing.Size(390, 30)
-$lblYearsInfo.Text = "Automatischer Planungszeitraum: 2026 bis 2030 (5 Jahre)"
-$grpYears.Controls.Add($lblYearsInfo)
+$lblFrom = New-Object System.Windows.Forms.Label
+$lblFrom.Location = New-Object System.Drawing.Point(20, 33)
+$lblFrom.Size = New-Object System.Drawing.Size(60, 20)
+$lblFrom.Text = "Von Jahr:"
+$lblFrom.Font = New-Object System.Drawing.Font("Segoe UI", 9)
+$grpYears.Controls.Add($lblFrom)
 
-# Status-Box / Log
+$txtStartYear = New-Object System.Windows.Forms.TextBox
+$txtStartYear.Location = New-Object System.Drawing.Point(90, 30)
+$txtStartYear.Size = New-Object System.Drawing.Size(80, 25)
+$txtStartYear.Text = "2026"
+$txtStartYear.Font = New-Object System.Drawing.Font("Segoe UI", 9)
+$grpYears.Controls.Add($txtStartYear)
+
+$lblTo = New-Object System.Windows.Forms.Label
+$lblTo.Location = New-Object System.Drawing.Point(210, 33)
+$lblTo.Size = New-Object System.Drawing.Size(60, 20)
+$lblTo.Text = "Bis Jahr:"
+$lblTo.Font = New-Object System.Drawing.Font("Segoe UI", 9)
+$grpYears.Controls.Add($lblTo)
+
+$txtEndYear = New-Object System.Windows.Forms.TextBox
+$txtEndYear.Location = New-Object System.Drawing.Point(280, 30)
+$txtEndYear.Size = New-Object System.Drawing.Size(80, 25)
+$txtEndYear.Text = "2030"
+$txtEndYear.Font = New-Object System.Drawing.Font("Segoe UI", 9)
+$grpYears.Controls.Add($txtEndYear)
+
+# --- LOG-FENSTER ---
 $txtLog = New-Object System.Windows.Forms.TextBox
-$txtLog.Location = New-Object System.Drawing.Point(20, 225)
-$txtLog.Size = New-Object System.Drawing.Size(420, 100)
+$txtLog.Location = New-Object System.Drawing.Point(25, 280)
+$txtLog.Size = New-Object System.Drawing.Size(480, 230)
 $txtLog.Multiline = $true
 $txtLog.ScrollBars = "Vertical"
 $txtLog.ReadOnly = $true
-$txtLog.Text = "Bereit. Waehle deine Region aus und klicke auf 'Feiertage in Teams anlegen'."
+$txtLog.BackColor = [System.Drawing.Color]::FromArgb(255, 255, 255)
+$txtLog.ForeColor = [System.Drawing.Color]::FromArgb(30, 30, 30)
+$txtLog.Font = New-Object System.Drawing.Font("Consolas", 9)
+$txtLog.Text = "Bereit. Waehle ein Land aus, um fortzufahren..."
 $form.Controls.Add($txtLog)
 
-# Button: Starten
+# --- START BUTTON ---
 $btnRun = New-Object System.Windows.Forms.Button
-$btnRun.Location = New-Object System.Drawing.Point(20, 345)
-$btnRun.Size = New-Object System.Drawing.Size(420, 45)
+$btnRun.Location = New-Object System.Drawing.Point(25, 530)
+$btnRun.Size = New-Object System.Drawing.Size(480, 45)
 $btnRun.Text = "Feiertage in Teams anlegen"
-$btnRun.BackColor = [System.Drawing.Color]::FromArgb(0, 120, 212)
+$btnRun.BackColor = [System.Drawing.Color]::FromArgb(0, 95, 184)
 $btnRun.ForeColor = [System.Drawing.Color]::White
 $btnRun.Font = New-Object System.Drawing.Font("Segoe UI", 10, [System.Drawing.FontStyle]::Bold)
+$btnRun.FlatStyle = [System.Windows.Forms.FlatStyle]::Flat
+$btnRun.FlatAppearance.BorderSize = 0
 $form.Controls.Add($btnRun)
 
-# Klick-Logik
+# --- AUSFUEHRUNGS-LOGIK ---
 $btnRun.Add_Click({
+    $startYear = 0
+    $endYear = 0
+    if (-not [int]::TryParse($txtStartYear.Text, [ref]$startYear) -or -not [int]::TryParse($txtEndYear.Text, [ref]$endYear)) {
+        return
+    }
+
     $btnRun.Enabled = $false
-    $txtLog.Text = "Verbinde mit Microsoft Teams..."
+    $txtLog.Text = "Verbinde mit Microsoft Teams...`r`n"
     $form.Refresh()
 
     try {
         if (-not (Get-Module -ListAvailable -Name MicrosoftTeams)) {
-            $txtLog.Text = "Installiere MicrosoftTeams-Modul..."
-            $form.Refresh()
             Install-Module MicrosoftTeams -Scope CurrentUser -Force -AllowClobber
         }
         Import-Module MicrosoftTeams -ErrorAction Stop
-
-        $txtLog.Text = "Authentifiziere im Teams-Tenant..."
-        $form.Refresh()
         Connect-MicrosoftTeams -ErrorAction Stop
         
-        $txtLog.Text = "Lese bestehende Feiertage aus Teams..."
+        $SelectedKey = $cmbCountry.SelectedItem.ToString()
+        $CountryCode = $globalCountries[$SelectedKey]
+        $Prefix = "$CountryCode - Holiday"
+
+        $txtLog.AppendText("Lade offizielle Feiertage fuer $CountryCode...`r`n")
         $form.Refresh()
+
         $ExistingSchedules = @(Get-CsOnlineSchedule -ErrorAction Stop)
         $ExistingNames = @($ExistingSchedules | ForEach-Object { $_.Name })
 
-        $SelectedRegion = $cmbRegion.SelectedItem.ToString()
-        # Kürzel aus dem String extrahieren (z.B. "DE-SN" oder "AT")
-        $RegionCode = $SelectedRegion.Substring($SelectedRegion.LastIndexOf("(") + 1, $SelectedRegion.LastIndexOf(")") - $SelectedRegion.LastIndexOf("(") - 1)
-        $Prefix = "$RegionCode - Feiertag"
-        $XmasStartDay = if ($chkXmas.Checked) { "24" } else { "25" }
-        $Years = 2026..2030
-
-        $HolidayDefs = [ordered]@{}
-
-        # --- GEMEINSAME BASIS-FEIERTAGE (DE / AT / CH) ---
-        if ($RegionCode -like "DE*" -or $RegionCode -eq "AT" -or $RegionCode -eq "CH") {
-            $HolidayDefs["Neujahr"] = foreach($y in $Years) { @{ Start = "$y-01-01"; End = "$y-01-02" } }
-            $HolidayDefs["Tag der Arbeit"] = foreach($y in $Years) { @{ Start = "$y-05-01"; End = "$y-05-02" } }
-            $HolidayDefs["Weihnachten"] = foreach($y in $Years) { @{ Start = "$y-12-$XmasStartDay"; End = "$y-12-27" } }
-        }
-
-        # --- REGIONALE LOGIK: DEUTSCHLAND ---
-        if ($RegionCode -like "DE*") {
-            $StateCode = $RegionCode.Split("-")[1]
-
-            $HolidayDefs["Tag der Deutschen Einheit"] = foreach($y in $Years) { @{ Start = "$y-10-03"; End = "$y-10-04" } }
-            
-            # Ostern (Karfreitag bis Ostermontag)
-            $HolidayDefs["Ostern"] = @(
-                @{ Start = "2026-04-03"; End = "2026-04-07" },
-                @{ Start = "2027-03-26"; End = "2027-03-30" },
-                @{ Start = "2028-04-14"; End = "2028-04-18" },
-                @{ Start = "2029-03-30"; End = "2029-04-03" },
-                @{ Start = "2030-04-19"; End = "2030-04-23" }
-            )
-            # Christi Himmelfahrt
-            $HolidayDefs["Christi Himmelfahrt"] = @(
-                @{ Start = "2026-05-14"; End = "2026-05-15" },
-                @{ Start = "2027-05-06"; End = "2027-05-07" },
-                @{ Start = "2028-05-25"; End = "2028-05-26" },
-                @{ Start = "2029-05-10"; End = "2029-05-11" },
-                @{ Start = "2030-05-30"; End = "2030-05-31" }
-            )
-            # Pfingstmontag
-            $HolidayDefs["Pfingstmontag"] = @(
-                @{ Start = "2026-05-25"; End = "2026-05-26" },
-                @{ Start = "2027-05-17"; End = "2027-05-18" },
-                @{ Start = "2028-06-05"; End = "2028-06-06" },
-                @{ Start = "2029-05-21"; End = "2029-05-22" },
-                @{ Start = "2030-06-10"; End = "2030-06-11" }
-            )
-
-            # Bundeslandspezifisch
-            if (@("BB", "HB", "HH", "MV", "NI", "SN", "ST", "SH", "TH", "ALL") -contains $StateCode) {
-                $HolidayDefs["Reformationstag"] = foreach($y in $Years) { @{ Start = "$y-10-31"; End = "$y-11-01" } }
-            }
-            if ($StateCode -eq "SN" -or $StateCode -eq "ALL") {
-                $BussName = "Bu$([char]0x00DF)- und Bettag"
-                $HolidayDefs[$BussName] = @(
-                    @{ Start = "2026-11-18"; End = "2026-11-19" },
-                    @{ Start = "2027-11-17"; End = "2027-11-18" },
-                    @{ Start = "2028-11-15"; End = "2028-11-16" },
-                    @{ Start = "2029-11-21"; End = "2029-11-22" },
-                    @{ Start = "2030-11-20"; End = "2030-11-21" }
-                )
-            }
-            if (@("BW", "BY", "ST", "ALL") -contains $StateCode) {
-                $HolidayDefs["Heilige Drei Könige"] = foreach($y in $Years) { @{ Start = "$y-01-06"; End = "$y-01-07" } }
-            }
-            if (@("BE", "MV", "ALL") -contains $StateCode) {
-                $HolidayDefs["Frauentag"] = foreach($y in $Years) { @{ Start = "$y-03-08"; End = "$y-03-09" } }
-            }
-            if (@("BW", "BY", "HE", "NW", "RP", "SL", "ALL") -contains $StateCode) {
-                $HolidayDefs["Fronleichnam"] = @(
-                    @{ Start = "2026-06-04"; End = "2026-06-05" },
-                    @{ Start = "2027-05-27"; End = "2027-05-28" },
-                    @{ Start = "2028-06-15"; End = "2028-06-16" },
-                    @{ Start = "2029-05-31"; End = "2029-06-01" },
-                    @{ Start = "2030-06-20"; End = "2030-06-21" }
-                )
-            }
-            if (@("SL", "BY", "ALL") -contains $StateCode) {
-                $HolidayDefs["Mariä Himmelfahrt"] = foreach($y in $Years) { @{ Start = "$y-08-15"; End = "$y-08-16" } }
-            }
-            if ($StateCode -eq "TH" -or $StateCode -eq "ALL") {
-                $HolidayDefs["Weltkindertag"] = foreach($y in $Years) { @{ Start = "$y-09-20"; End = "$y-09-21" } }
-            }
-            if (@("BW", "BY", "NW", "RP", "SL", "ALL") -contains $StateCode) {
-                $HolidayDefs["Allerheiligen"] = foreach($y in $Years) { @{ Start = "$y-11-01"; End = "$y-11-02" } }
-            }
-        }
-
-        # --- REGIONALE LOGIK: ÖSTERREICH (AT) ---
-        elseif ($RegionCode -eq "AT") {
-            $HolidayDefs["Staatsfeiertag"] = foreach($y in $Years) { @{ Start = "$y-05-01"; End = "$y-05-02" } }
-            $HolidayDefs["Nationalfeiertag"] = foreach($y in $Years) { @{ Start = "$y-10-26"; End = "$y-10-27" } }
-            $HolidayDefs["Mariä Empfängnis"] = foreach($y in $Years) { @{ Start = "$y-12-08"; End = "$y-12-09" } }
-            $HolidayDefs["Christi Himmelfahrt"] = @(
-                @{ Start = "2026-05-14"; End = "2026-05-15" },
-                @{ Start = "2027-05-06"; End = "2027-05-07" },
-                @{ Start = "2028-05-25"; End = "2028-05-26" },
-                @{ Start = "2029-05-10"; End = "2029-05-11" },
-                @{ Start = "2030-05-30"; End = "2030-05-31" }
-            )
-        }
-
-        # --- REGIONALE LOGIK: SCHWEIZ (CH) ---
-        elseif ($RegionCode -eq "CH") {
-            $HolidayDefs["Berchtoldstag"] = foreach($y in $Years) { @{ Start = "$y-01-02"; End = "$y-01-03" } }
-            $HolidayDefs["Bundesfeiertag"] = foreach($y in $Years) { @{ Start = "$y-08-01"; End = "$y-08-02" } }
-            $HolidayDefs["Auffahrt"] = @(
-                @{ Start = "2026-05-14"; End = "2026-05-15" },
-                @{ Start = "2027-05-06"; End = "2027-05-07" },
-                @{ Start = "2028-05-25"; End = "2028-05-26" },
-                @{ Start = "2029-05-10"; End = "2029-05-11" },
-                @{ Start = "2030-05-30"; End = "2030-05-31" }
-            )
-        }
-
-        # --- INTERNATIONAL: USA ---
-        elseif ($RegionCode -eq "USA") {
-            $HolidayDefs["New Year's Day"] = foreach($y in $Years) { @{ Start = "$y-01-01"; End = "$y-01-02" } }
-            $HolidayDefs["Independence Day"] = foreach($y in $Years) { @{ Start = "$y-07-04"; End = "$y-07-05" } }
-            $HolidayDefs["Veterans Day"] = foreach($y in $Years) { @{ Start = "$y-11-11"; End = "$y-11-12" } }
-            $HolidayDefs["Christmas Day"] = foreach($y in $Years) { @{ Start = "$y-12-25"; End = "$y-12-26" } }
-        }
-
-        # --- INTERNATIONAL: UK ---
-        elseif ($RegionCode -eq "UK") {
-            $HolidayDefs["New Year's Day"] = foreach($y in $Years) { @{ Start = "$y-01-01"; End = "$y-01-02" } }
-            $HolidayDefs["Christmas Day"] = foreach($y in $Years) { @{ Start = "$y-12-25"; End = "$y-12-26" } }
-            $HolidayDefs["Boxing Day"] = foreach($y in $Years) { @{ Start = "$y-12-26"; End = "$y-12-27" } }
-        }
-
         $counter = 0
-        foreach ($HolidayName in $HolidayDefs.Keys) {
-            $FullScheduleName = "$Prefix - $HolidayName"
-            if ($ExistingNames -contains $FullScheduleName) { continue }
+        $Years = $startYear..$endYear
 
-            $txtLog.Text = "Erstelle: $HolidayName..."
-            $form.Refresh()
-
-            $Ranges = @()
-            foreach ($Period in $HolidayDefs[$HolidayName]) {
-                $StartDate = [datetime]::ParseExact($Period.Start, "yyyy-MM-dd", [Globalization.CultureInfo]::InvariantCulture)
-                $EndDate   = [datetime]::ParseExact($Period.End,   "yyyy-MM-dd", [Globalization.CultureInfo]::InvariantCulture)
+        foreach ($y in $Years) {
+            $apiUrl = "https://date.nager.at/api/v3/PublicHolidays/$y/$CountryCode"
+            
+            try {
+                $response = Invoke-RestMethod -Uri $apiUrl -Method Get -ErrorAction Stop
                 
-                $Ranges += New-CsOnlineDateTimeRange -Start ($StartDate.ToString("d/M/yyyy")) -End ($EndDate.ToString("d/M/yyyy"))
-            }
+                foreach ($h in $response) {
+                    $HolidayName = $h.localName
+                    $FullScheduleName = "$Prefix - $HolidayName ($y)"
 
-            New-CsOnlineSchedule -Name $FullScheduleName -FixedSchedule -DateTimeRanges $Ranges | Out-Null
-            $counter++
+                    if ($ExistingNames -contains $FullScheduleName) { continue }
+
+                    $StartDate = [datetime]::ParseExact($h.date, "yyyy-MM-dd", [Globalization.CultureInfo]::InvariantCulture)
+                    $EndDate = $StartDate.AddDays(1)
+
+                    $Range = New-CsOnlineDateTimeRange -Start ($StartDate.ToString("d/M/yyyy")) -End ($EndDate.ToString("d/M/yyyy"))
+                    
+                    New-CsOnlineSchedule -Name $FullScheduleName -FixedSchedule -DateTimeRanges @($Range) | Out-Null
+                    $txtLog.AppendText("Erstellt: $FullScheduleName`r`n")
+                    $form.Refresh()
+                    $counter++
+                }
+            }
+            catch {
+                $msg = "Hinweis fuer Jahr " + $y + ": Keine Daten oder API nicht erreichbar.`r`n"
+                $txtLog.AppendText($msg)
+            }
         }
 
-        $txtLog.Text = "Fertig! $counter Feiertagsblöcke für $RegionCode erstellt."
-        [System.Windows.Forms.MessageBox]::Show("Feiertage wurden erfolgreich für $RegionCode in Teams angelegt!", "Erfolg", [System.Windows.Forms.MessageBoxButtons]::OK, [System.Windows.Forms.MessageBoxIcon]::Information)
+        $txtLog.AppendText("`r`nFertig! $counter Feiertage erfolgreich importiert.")
+        [System.Windows.Forms.MessageBox]::Show("Feiertage wurden erfolgreich angelegt!", "Erfolg", [System.Windows.Forms.MessageBoxButtons]::OK, [System.Windows.Forms.MessageBoxIcon]::Information)
     }
     catch {
-        [System.Windows.Forms.MessageBox]::Show("Fehler: $_", "Fehler", [System.Windows.Forms.MessageBoxButtons]::OK, [System.Windows.Forms.MessageBoxIcon]::Error)
-        $txtLog.Text = "Fehler aufgetreten."
+        [System.Windows.Forms.MessageBox]::Show("Fehler aufgetreten.", "Fehler", [System.Windows.Forms.MessageBoxButtons]::OK, [System.Windows.Forms.MessageBoxIcon]::Error)
     }
     $btnRun.Enabled = $true
 })
